@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html class="zyyo.net">
-
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -15,6 +14,147 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 	<!-- Command Terminal CSS -->
 	<style>
+		/* 每日歌单弹窗样式 */
+		.daily-music {
+			position: fixed;
+			top: 20px;
+			left: 20px;
+			z-index: 9997;
+			width: 280px;
+			background: linear-gradient(180deg, rgba(18,18,20,0.8), rgba(18,18,20,0.7));
+			backdrop-filter: blur(12px) saturate(120%);
+			-webkit-backdrop-filter: blur(12px) saturate(120%);
+			border-radius: 12px;
+			border: 1px solid rgba(255,255,255,0.08);
+			box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+			overflow: hidden;
+			transition: all 0.3s ease;
+		}
+		
+		/* 控制整个弹窗隐藏 */
+		.daily-music.hidden {
+			display: none;
+		}
+
+		.music-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 8px 12px;
+			background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent);
+			border-bottom: 1px solid rgba(255,255,255,0.03);
+			cursor: pointer;
+		}
+		
+		.music-title {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			color: #e6eef8;
+			font-size: 13px;
+			font-weight: 600;
+		}
+		
+		.music-title i {
+			color: #4cc9f0;
+		}
+		
+		.music-toggle {
+			color: #e6eef8;
+			font-size: 12px;
+			width: 24px;
+			height: 24px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 50%;
+			background: rgba(255,255,255,0.05);
+			transition: all 0.2s ease;
+		}
+		
+		.music-toggle:hover {
+			background: rgba(255,255,255,0.1);
+		}
+		
+		.music-content {
+			max-height: 300px;
+			overflow-y: auto;
+			padding: 8px 0;
+			transition: all 0.3s ease;
+		}
+		
+		.music-content.hidden {
+			max-height: 0;
+			padding: 0;
+		}
+		
+		.music-item {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			padding: 6px 12px;
+			color: #dfeefe;
+			font-size: 12px;
+			transition: background 0.2s ease;
+		}
+		
+		.music-item:hover {
+			background: rgba(255,255,255,0.05);
+		}
+		
+		.music-number {
+			width: 16px;
+			height: 16px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 4px;
+			background: rgba(76, 201, 240, 0.2);
+			color: #4cc9f0;
+			font-size: 10px;
+		}
+		
+		.music-info {
+			flex: 1;
+			overflow: hidden;
+		}
+		
+		.music-name {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			font-weight: 500;
+		}
+		
+		.music-singer {
+			font-size: 10px;
+			color: #a0b8d8;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		
+		.music-duration {
+			font-size: 10px;
+			color: #a0b8d8;
+			min-width: 30px;
+			text-align: right;
+		}
+		
+		/* 滚动条样式 */
+		.music-content::-webkit-scrollbar {
+			width: 4px;
+		}
+		
+		.music-content::-webkit-scrollbar-track {
+			background: transparent;
+		}
+		
+		.music-content::-webkit-scrollbar-thumb {
+			background: rgba(255,255,255,0.1);
+			border-radius: 2px;
+		}
+		
 		/* Mac-style Command Terminal Styles */
 		:root {
 			--mac-bg: rgba(255,255,255,0.06);
@@ -71,7 +211,6 @@
 		.minimize-btn { background: #ffbd2e; border: 1px solid rgba(0,0,0,0.06); }
 		.maximize-btn { background: #28ca42; border: 1px solid rgba(0,0,0,0.06); }
 		
-		/* Title left-aligned like macOS */
 		.command-title { display:flex; align-items:center; gap:10px; color: #e6eef8; font-size:13px; font-weight:600; padding-left:6px; }
 		.command-title i { color: var(--accent); opacity: .95; }
 		
@@ -95,7 +234,7 @@
 		.flash-effect { animation: flash .5s ease; }
 		@keyframes flash { 0%,100%{ opacity:1 } 50%{ opacity:.75 } }
 		
-		/* Control Panel Specific Styles (kept consistent) */
+		/* Control Panel Specific Styles */
 		.switch { position: relative; display:inline-flex; align-items:center; cursor:pointer; margin:5px 0; }
 		.switch input { opacity:0; width:0; height:0; }
 		.slider { position: relative; display:inline-block; width:50px; height:24px; background-color:#2a2a2a; border-radius:24px; margin-right:10px; transition:.3s; }
@@ -106,11 +245,37 @@
 		.theme-btn:hover { transform:translateY(-3px); box-shadow:0 8px 18px rgba(0,0,0,0.45); }
 		
 		/* Responsive */
-		@media (max-width:768px) { .command-box { width:95%; height:52vh; } .open-command-btn { width:50px; height:50px; font-size:18px; bottom:16px; right:16px; } }
+		@media (max-width:768px) { 
+			.command-box { width:95%; height:52vh; } 
+			.open-command-btn { width:50px; height:50px; font-size:18px; bottom:16px; right:16px; }
+			.daily-music { width: 240px; top: 10px; left: 10px; }
+		}
 	</style>
 </head>
-
 <body>
+	<!-- 每日歌单弹窗 -->
+	<div class="daily-music" id="dailyMusic">
+		<div class="music-header" id="musicHeader">
+			<div class="music-title">
+				<i class="fas fa-music"></i>
+				<span>每日推荐歌单</span>
+                <a>真心换不回真心 别相信爱情 遇见你从来不后悔</a>
+			</div>
+			<div class="music-toggle" id="musicToggle">
+				<i class="fas fa-chevron-up"></i>
+			</div>
+		</div>
+			<div class="music-item">
+				<div class="music-number">1</div>
+				<div class="music-info">
+					<div class="music-name">告白气球</div>
+					<div class="music-singer">周杰伦</div>
+				</div>
+				<div class="music-duration">3:35</div>
+			</div>
+		</div>
+	</div>
+
 	<div id="zyyo-loading">
 		<div id="zyyo-loading-center">
 		</div>
@@ -152,8 +317,8 @@
 				<ul id="line">
 					<li>
 						<div class="focus"></div>
-						<div>于大刚获得真爱 于大刚宣布永久退圈</div>
-						<div>2025.7.6</div>
+						<div></div>
+						<div></div>
 					</li>
 					<li>
 						<div class="focus"></div>
@@ -251,38 +416,38 @@
 					</svg>
 					site
 				</div>
-				<div class="projectList">
-					<a class="projectItem a" target="_blank" href="https://blog.糖心vlog.lol">
+					<div class="projectList">
+					<a class="projectItem a" target="_blank" href="https://github.com/LigeKing622/Yudagang-About-website.git">
 						<div class="projectItemLeft">
-							<h1>糖心网</h1>
-							<p>这里可以下载一些有用的工具例如Ps Vscode C++ ....</p>
+							<h1>Github地址</h1>
+							<p>这里个人主页源码</p>
 						</div>
 						<div class="projectItemRight">
 							<img src="./static/img/i1.png" alt="">
 						</div>
 					</a>
-					<a class="projectItem a" target="_blank" href="https://gz-Sakura.vip">
+					<a class="projectItem a" target="_blank" href="https://www.bilibili.com/">
 						<div class="projectItemLeft">
-							<h1>于大刚科技卡网</h1>
-							<p>Minecarft优化辅助Mod 于大刚商网原站</p>
+							<h1>哔哩哔哩 (゜-゜)つロ 干杯~-bilibili</h1>
+							<p>国内知名的视频弹幕网站</p>
 						</div>
 						<div class="projectItemRight">
 							<img src="./static/img/i2.png" alt="">
 						</div>
 					</a>
-					<a class="projectItem a" target="_blank" href="https://cookies.糖心vlog.lol">
+					<a class="projectItem a" target="_blank" href="https://www.catcdn.cn/">
 						<div class="projectItemLeft">
-							<h1>我的世界</h1>
-							<p>4399账号获取Cookies获取</p>
+							<h1>CatCDN 为你保驾护航</h1>
+							<p>在网络边缘为您的网站保驾护航</p>
 						</div>
 						<div class="projectItemRight">
 							<img src="./static/img/i4.png" alt="">
 						</div>
 					</a>
-					<a class="projectItem a" target="_blank" href="https://blog.糖心vlog.lol">
+					<a class="projectItem a" target="_blank" href="https://sadidc.com/">
 						<div class="projectItemLeft">
-							<h1>实验室</h1>
-							<p>收集有趣html作品</p>
+							<h1>伤心的云 IDC</h1>
+							<p>最良心 最低价 IDC 兼 CDN</p>
 						</div>
 						<div class="projectItemRight">
 							<img src="./static/img/i4.png" alt="">
@@ -298,8 +463,8 @@
 				<div class="projectList">
 					<a class="projectItem b" target="_blank" href="https://blog.糖心vlog.lol">
 						<div class="projectItemLeft">
-							<h1>博客</h1>
-							<p>记录摆烂日常</p>
+							<h1>Github地址</h1>
+							<p>这里个人主页源码</p>
 						</div>
 						<div class="projectItemRight">
 							<img src="./static/img/i1.png" alt="">
@@ -307,8 +472,8 @@
 					</a>
 					<a class="projectItem b" target="_blank" href="https://gz-Sakura.vip">
 						<div class="projectItemLeft">
-							<h1>于大刚科技卡网</h1>
-							<p>Minecarft优化辅助Mod 于大刚商网原站</p>
+							<h1>哔哩哔哩 (゜-゜)つロ 干杯~-bilibili</h1>
+							<p>国内知名的视频弹幕网站</p>
 						</div>
 						<div class="projectItemRight">
 							<img src="./static/img/i2.png" alt="">
@@ -316,8 +481,8 @@
 					</a>
 					<a class="projectItem b" target="_blank" href="https://cookies.糖心vlog.lol">
 						<div class="projectItemLeft">
-							<h1>我的世界</h1>
-							<p>4399账号获取Cookies获取</p>
+							<h1>CatCDN 为你保驾护航</h1>
+							<p>在网络边缘为您的网站保驾护航。</p>
 						</div>
 						<div class="projectItemRight">
 							<img src="./static/img/i4.png" alt="">
@@ -325,8 +490,8 @@
 					</a>
 					<a class="projectItem b" target="_blank" href="https://blog.糖心vlog.lol">
 						<div class="projectItemLeft">
-							<h1>实验室</h1>
-							<p>收集有趣html作品</p>
+							<h1>伤心的云 IDC</h1>
+							<p>最良心 最低价 IDC 兼 CDN</p>
 						</div>
 						<div class="projectItemRight">
 							<img src="./static/img/i4.png" alt="">
@@ -368,13 +533,15 @@
 			</div>
 			<div class="command-title">
 				<i class="fas fa-terminal"></i>
-				<span>PowerShell macOS</span>
+				<span>PowerShell MacOS</span>
 			</div>
 		</div>
 		
 		<div class="command-content">
 			<div class="command-output" id="commandOutput">
 				<div class="output-line command-prompt">Welcome to PowerShell</div>
+				没消失 失联邮箱联系Gcadmin1007@126.com 
+				<br>Github地址:https://github.com/LigeKing622/Yudagang-About-website
 				<div class="output-line">!<span class="command-cmd">help</span> 查看所有可用命令</div>
 				<div class="output-line">!<span class="command-cmd">control</span> 打开功能控制面板</div>
 			</div>
@@ -454,6 +621,32 @@
 	<!-- 原网站脚本 -->
 	<script src="./static/js/script.js"></script>
 	
+	<!-- 每日歌单弹窗脚本 -->
+	<script>
+		// 歌单弹窗展开/收起功能
+		document.addEventListener('DOMContentLoaded', () => {
+			const musicHeader = document.getElementById('musicHeader');
+			const musicContent = document.getElementById('musicContent');
+			const musicToggle = document.getElementById('musicToggle');
+			const toggleIcon = musicToggle.querySelector('i');
+			
+			// 点击头部切换展开/收起
+			musicHeader.addEventListener('click', () => {
+				musicContent.classList.toggle('hidden');
+				if (musicContent.classList.contains('hidden')) {
+					toggleIcon.classList.remove('fa-chevron-up');
+					toggleIcon.classList.add('fa-chevron-down');
+				} else {
+					toggleIcon.classList.remove('fa-chevron-down');
+					toggleIcon.classList.add('fa-chevron-up');
+				}
+			});
+			
+			// 初始化默认展开
+			musicContent.classList.remove('hidden');
+		});
+	</script>
+	
 	<!-- 命令终端脚本 -->
 	<script>
 		// DOM references
@@ -471,6 +664,21 @@
 
 		let commandHistory = [];
 		let historyIndex = -1;
+
+		// 工具函数：hex转rgb
+		function hexToRgb(hex) {
+			const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+			return result ? {
+				r: parseInt(result[1], 16),
+				g: parseInt(result[2], 16),
+				b: parseInt(result[3], 16)
+			} : null;
+		}
+
+		// 调整颜色亮度
+		function adjustColor(color, amount) {
+			return '#' + color.replace(/^#/, '').replace(/../g, c => ('0'+Math.min(255, Math.max(0, parseInt(c,16)+amount)).toString(16)).substr(-2));
+		}
 
 		document.addEventListener('DOMContentLoaded', () => {
 			openCommandBoxBtn.addEventListener('click', () => { commandBox.classList.remove('hidden'); commandInput.focus(); });
@@ -510,6 +718,13 @@
 				this.style.borderColor = color;
 				addOutputLine(`主题颜色已切换为: ${this.textContent}`, 'success', controlOutput);
 				openCommandBoxBtn.style.background = `linear-gradient(135deg, ${color} 0%, ${adjustColor(color, -30)} 100%)`;
+				// 更新歌单弹窗的主题色
+				const rgb = hexToRgb(color);
+				if (rgb) {
+					document.querySelector('.music-number').style.background = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2)`;
+					document.querySelector('.music-number').style.color = color;
+					document.querySelector('.music-title i').style.color = color;
+				}
 			}));
 
 			document.getElementById('toggleAnimation').addEventListener('change', function() { addOutputLine(`页面动画效果已${this.checked ? '开启' : '关闭'}`, 'info', controlOutput); });
@@ -529,35 +744,79 @@
 
 		function executeCommand(cmd) {
 			if (!cmd.trim()) return;
-			commandHistory.unshift(cmd); historyIndex = -1;
+			commandHistory.unshift(cmd);
+			historyIndex = -1;
 			addOutputLine(`$ ${cmd}`, 'command-prompt', commandOutput);
 			const cmdLower = cmd.toLowerCase().trim();
 			switch (true) {
 				case cmdLower === 'help':
-					addOutputLine('可用命令: help, setting, clear, time, theme, calc, about, lovetime', 'info', commandOutput); break;
+					addOutputLine('可用命令: help, setting, clear, time, theme, calc, about, lovetime, music', 'info', commandOutput);
+					addOutputLine('!music 切换每日推荐歌单显示/隐藏', 'info', commandOutput);
+					break;
 				case cmdLower === 'lovetime': {
-					const startDate = new Date('2025-07-06T00:00:00'); const now = new Date(); const diffDays = Math.floor(Math.abs(now - startDate) / (1000*60*60*24));
-					addOutputLine(`我们已经在一起 ${diffDays} 天了！`, 'success', commandOutput); break;
+					const startDate = new Date('2026-04-01T00:00:00');
+					const now = new Date();
+					const diffDays = Math.floor(Math.abs(now - startDate) / (1000 * 60 * 60 * 24));
+					addOutputLine(`我们已经在一起 ${diffDays} 天了！`, 'success', commandOutput);
+					break;
 				}
-				case cmdLower === 'setting': commandBox.classList.add('hidden'); controlPanel.classList.remove('hidden'); controlInput.focus(); addOutputLine('打开控制面板', 'success', commandOutput); break;
-				case cmdLower === 'clear': commandOutput.innerHTML = ''; break;
-				case cmdLower === 'time': { const now = new Date(); addOutputLine(`当前时间: ${now.toLocaleTimeString()}`, 'info', commandOutput); addOutputLine(`当前日期: ${now.toLocaleDateString()}`, 'info', commandOutput); break; }
+				case cmdLower === 'music': {
+					const musicPanel = document.getElementById('dailyMusic');
+					if (musicPanel.classList.contains('hidden')) {
+						musicPanel.classList.remove('hidden');
+						addOutputLine('🎵 每日歌单已显示（左上角）', 'success', commandOutput);
+					} else {
+						musicPanel.classList.add('hidden');
+						addOutputLine('🎵 每日歌单已隐藏', 'success', commandOutput);
+					}
+					break;
+				}
+				case cmdLower === 'setting':
+					commandBox.classList.add('hidden');
+					controlPanel.classList.remove('hidden');
+					controlInput.focus();
+					addOutputLine('打开控制面板', 'success', commandOutput);
+					break;
+				case cmdLower === 'clear':
+					commandOutput.innerHTML = '';
+					break;
+				case cmdLower === 'time': {
+					const now = new Date();
+					addOutputLine(`当前时间: ${now.toLocaleTimeString()}`, 'info', commandOutput);
+					addOutputLine(`当前日期: ${now.toLocaleDateString()}`, 'info', commandOutput);
+					break;
+				}
 				case cmdLower.startsWith('theme '): {
 					const theme = cmdLower.split(' ')[1];
-					if (theme === 'dark') { document.body.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)'; addOutputLine('已切换至暗色主题', 'success', commandOutput); }
-					else if (theme === 'light') { document.body.style.background = 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)'; addOutputLine('已切换至亮色主题', 'success', commandOutput); }
-					else addOutputLine('未知主题，请使用 "theme dark" 或 "theme light"', 'error', commandOutput);
+					if (theme === 'dark') {
+						document.body.style.background = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
+						addOutputLine('已切换至暗色主题', 'success', commandOutput);
+					} else if (theme === 'light') {
+						document.body.style.background = 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)';
+						addOutputLine('已切换至亮色主题', 'success', commandOutput);
+					} else {
+						addOutputLine('未知主题，请使用 "theme dark" 或 "theme light"', 'error', commandOutput);
+					}
 					break;
 				}
 				case cmdLower.startsWith('calc '): {
-					try { const result = Function('"use strict"; return (' + cmd.substring(5) + ')')(); addOutputLine(`计算结果: ${result}`, 'success', commandOutput); }
-					catch (e) { addOutputLine(`计算错误: ${e.message}`, 'error', commandOutput); }
+					try {
+						const result = Function('"use strict"; return (' + cmd.substring(5) + ')')();
+						addOutputLine(`计算结果: ${result}`, 'success', commandOutput);
+					} catch (e) {
+						addOutputLine(`计算错误: ${e.message}`, 'error', commandOutput);
+					}
 					break;
 				}
-				case cmdLower === 'about': addOutputLine('关于: 于大刚 - 前端开发者', 'info', commandOutput); break;
-				default: addOutputLine(`未知命令: ${cmd}`, 'error', commandOutput); addOutputLine('输入 "help" 查看', 'info', commandOutput);
+				case cmdLower === 'about':
+					addOutputLine('关于: 于大刚 - 前端开发者', '职高生 185 ', commandOutput);
+					break;
+				default:
+					addOutputLine(`未知命令: ${cmd}`, 'error', commandOutput);
+					addOutputLine('输入 "help" 查看可用命令', 'info', commandOutput);
 			}
-			commandInput.value = ''; commandOutput.scrollTop = commandOutput.scrollHeight;
+			commandInput.value = '';
+			commandOutput.scrollTop = commandOutput.scrollHeight;
 		}
 
 		function executeControlCommand(cmd) {
@@ -572,20 +831,38 @@
 		}
 
 		function addOutputLine(text, className, outputElement) {
-			const line = document.createElement('div'); line.className = `output-line ${className}`;
-			if (text.includes('<span') || text.includes('<i>')) line.innerHTML = text; else line.textContent = text;
+			const line = document.createElement('div');
+			line.className = `output-line ${className}`;
+			if (text.includes('<span') || text.includes('<i>')) line.innerHTML = text;
+			else line.textContent = text;
 			outputElement.appendChild(line);
 		}
 
 		function initDrag(element, header) {
 			let isDragging = false, currentX, currentY, initialX, initialY;
-			header.addEventListener('mousedown', startDrag); document.addEventListener('mousemove', drag); document.addEventListener('mouseup', stopDrag);
-			function startDrag(e) { isDragging = true; initialX = e.clientX - element.offsetLeft; initialY = e.clientY - element.offsetTop; element.classList.add('flash-effect'); setTimeout(() => element.classList.remove('flash-effect'), 500); }
-			function drag(e) { if (!isDragging) return; e.preventDefault(); currentX = e.clientX - initialX; currentY = e.clientY - initialY; currentX = Math.max(0, Math.min(currentX, window.innerWidth - element.offsetWidth)); currentY = Math.max(0, Math.min(currentY, window.innerHeight - element.offsetHeight)); element.style.left = `${currentX}px`; element.style.top = `${currentY}px`; element.style.transform = 'none'; }
+			header.addEventListener('mousedown', startDrag);
+			document.addEventListener('mousemove', drag);
+			document.addEventListener('mouseup', stopDrag);
+			function startDrag(e) {
+				isDragging = true;
+				initialX = e.clientX - element.offsetLeft;
+				initialY = e.clientY - element.offsetTop;
+				element.classList.add('flash-effect');
+				setTimeout(() => element.classList.remove('flash-effect'), 500);
+			}
+			function drag(e) {
+				if (!isDragging) return;
+				e.preventDefault();
+				currentX = e.clientX - initialX;
+				currentY = e.clientY - initialY;
+				currentX = Math.max(0, Math.min(currentX, window.innerWidth - element.offsetWidth));
+				currentY = Math.max(0, Math.min(currentY, window.innerHeight - element.offsetHeight));
+				element.style.left = `${currentX}px`;
+				element.style.top = `${currentY}px`;
+				element.style.transform = 'none';
+			}
 			function stopDrag() { isDragging = false; }
 		}
-
-		function adjustColor(color, amount) { return '#' + color.replace(/^#/, '').replace(/../g, c => ('0'+Math.min(255, Math.max(0, parseInt(c,16)+amount)).toString(16)).substr(-2)); }
 	</script>
 	
 	<!-- 统计脚本 -->
