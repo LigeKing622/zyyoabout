@@ -1,4 +1,11 @@
-2131243
+Version 1.0.2 Update （2026.5.17）
+- PowerShell + Music
+- LoveTime
+- 每日日推歌单（未完善）
+- 正在手搓后端
+- 完整展示
+- <img width="1914" height="1037" alt="QQ20260517-213759" src="https://github.com/user-attachments/assets/3c18c94d-7faf-47f0-bfeb-cbd2cdacb3a5" />
+
 
 Version 1.0.1 更新 （2025.12.30）
 
