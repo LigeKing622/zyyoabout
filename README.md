@@ -1,3 +1,5 @@
+Version 1.1.1 Update （2026 5.28）
+- 增加彩蛋 提示 多打开几次终端 仅限非移动端展示
 Version 1.1.0 Update （2026.5.28）
 - PowerShell Styles 新增2个
 - 使用用法 /class 0 恢复 /class 1 切换玻璃磨砂 /class 3 切换玻璃透明
