@@ -250,6 +250,49 @@
 			.open-command-btn { width:50px; height:50px; font-size:18px; bottom:16px; right:16px; }
 			.daily-music { width: 240px; top: 10px; left: 10px; }
 		}
+
+		/* Glassmorphism mode for command terminal (can be toggled with /class 1 and /class 0) */
+		.command-box.glass-mode {
+			background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+			backdrop-filter: blur(14px) saturate(140%);
+			-webkit-backdrop-filter: blur(14px) saturate(140%);
+			border-radius: 16px;
+			border: 1px solid rgba(255,255,255,0.12);
+			box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+			transition: background .25s ease, box-shadow .25s ease, border .25s ease;
+		}
+
+		.command-box.glass-mode .command-header {
+			background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+			border-bottom: 1px solid rgba(255,255,255,0.06);
+		}
+
+		.command-box.glass-mode .command-input-container {
+			background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
+			border-top: 1px solid rgba(255,255,255,0.05);
+		}
+
+		/* 透明玻璃质感（/class 3） - 更清透、更轻的边框和高光 */
+		.command-box.glass-clear {
+			background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+			backdrop-filter: blur(6px) saturate(120%);
+			-webkit-backdrop-filter: blur(6px) saturate(120%);
+			border-radius: 14px;
+			/* 使用 --primary-color 的浅色变体作为边框高光（通过 JS 设置 --primary-r/g/b） */
+			border: 1px solid rgba(var(--primary-r, 76), var(--primary-g, 201), var(--primary-b, 240), 0.12);
+			box-shadow: 0 6px 20px rgba(0,0,0,0.18), inset 0 1px 0 rgba(var(--primary-r, 76), var(--primary-g, 201), var(--primary-b, 240), 0.03);
+			transition: background .2s ease, box-shadow .2s ease, border .2s ease;
+		}
+
+		.command-box.glass-clear .command-header {
+			background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+			border-bottom: 1px solid rgba(255,255,255,0.03);
+		}
+
+		.command-box.glass-clear .command-input-container {
+			background: transparent;
+			border-top: 1px solid rgba(255,255,255,0.03);
+		}
 	</style>
 </head>
 <body>
@@ -264,18 +307,17 @@
 			<div class="music-toggle" id="musicToggle">
 				<i class="fas fa-chevron-up"></i>
 			</div>
-		</div>
+					</div>
 			<div class="music-item">
 				<div class="music-number">1</div>
 				<div class="music-info">
-					<div class="music-name">告白气球</div>
+					<div class="music-name">你说好的幸福呢</div>
 					<div class="music-singer">周杰伦</div>
 				</div>
 				<div class="music-duration">3:35</div>
 			</div>
 		</div>
 	</div>
-
 	<div id="zyyo-loading">
 		<div id="zyyo-loading-center">
 		</div>
@@ -522,8 +564,7 @@
 	<button class="open-command-btn" id="openCommandBox">
 		<i class="fas fa-terminal"></i>
 	</button>
-	
-	<!-- 命令终端 -->
+	<!-- Test -->
 	<div class="command-box hidden" id="commandBox">
 		<div class="command-header" id="commandHeader">
 			<div class="window-controls">
@@ -541,7 +582,7 @@
 			<div class="command-output" id="commandOutput">
 				<div class="output-line command-prompt">Welcome to PowerShell</div>
 				没消失 失联邮箱联系Gcadmin1007@126.com 
-				<br>Github地址:https://github.com/LigeKing622/Yudagang-About-website
+				<br>Github地址:https://github.com/LigeKing622/zyyoabout
 				<div class="output-line">!<span class="command-cmd">help</span> 查看所有可用命令</div>
 				<div class="output-line">!<span class="command-cmd">control</span> 打开功能控制面板</div>
 			</div>
@@ -571,7 +612,7 @@
 			<div class="command-output" id="controlOutput">
 				<div class="output-line command-prompt">PowerShell 1.0</div>
 				<div class="output-line">PowerShell Setting <span class="command-cmd">Setting</span> 触发打开</div>
-				<div class="output-line">在这里可以实现各种前端控制功能</div>
+				<div class="output-line">在这里可以实现各种前端控制功能-未完成</div>
 				<br>
 				<div class="output-line">
 					<h4><i class="fas fa-toggle-on"></i> 功能开关</h4>
@@ -621,16 +662,16 @@
 	<!-- 原网站脚本 -->
 	<script src="./static/js/script.js"></script>
 	
-	<!-- 每日歌单弹窗脚本 -->
+
 	<script>
-		// 歌单弹窗展开/收起功能
+
 		document.addEventListener('DOMContentLoaded', () => {
 			const musicHeader = document.getElementById('musicHeader');
 			const musicContent = document.getElementById('musicContent');
 			const musicToggle = document.getElementById('musicToggle');
 			const toggleIcon = musicToggle.querySelector('i');
 			
-			// 点击头部切换展开/收起
+
 			musicHeader.addEventListener('click', () => {
 				musicContent.classList.toggle('hidden');
 				if (musicContent.classList.contains('hidden')) {
@@ -642,30 +683,22 @@
 				}
 			});
 			
-			// 初始化默认展开
+
 			musicContent.classList.remove('hidden');
 		});
 	</script>
 	
-	<!-- 命令终端脚本 -->
+
 	<script>
-		// DOM references
+
 		const commandBox = document.getElementById('commandBox');
 		const controlPanel = document.getElementById('controlPanel');
 		const openCommandBoxBtn = document.getElementById('openCommandBox');
-		const closeBtn = document.getElementById('closeBtn');
-		const closeControlBtn = document.getElementById('closeControlBtn');
-		const commandInput = document.getElementById('commandInput');
-		const commandOutput = document.getElementById('commandOutput');
-		const controlInput = document.getElementById('controlInput');
-		const controlOutput = document.getElementById('controlOutput');
-		const commandHeader = document.getElementById('commandHeader');
-		const controlHeader = document.getElementById('controlHeader');
 
 		let commandHistory = [];
 		let historyIndex = -1;
 
-		// 工具函数：hex转rgb
+
 		function hexToRgb(hex) {
 			const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
 			return result ? {
@@ -675,9 +708,18 @@
 			} : null;
 		}
 
-		// 调整颜色亮度
 		function adjustColor(color, amount) {
 			return '#' + color.replace(/^#/, '').replace(/../g, c => ('0'+Math.min(255, Math.max(0, parseInt(c,16)+amount)).toString(16)).substr(-2));
+		}
+
+
+		function setPrimaryRgbVars(hex) {
+			const rgb = hexToRgb(hex || getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#4cc9f0');
+			if (rgb) {
+				document.documentElement.style.setProperty('--primary-r', rgb.r);
+				document.documentElement.style.setProperty('--primary-g', rgb.g);
+				document.documentElement.style.setProperty('--primary-b', rgb.b);
+			}
 		}
 
 		document.addEventListener('DOMContentLoaded', () => {
@@ -718,7 +760,6 @@
 				this.style.borderColor = color;
 				addOutputLine(`主题颜色已切换为: ${this.textContent}`, 'success', controlOutput);
 				openCommandBoxBtn.style.background = `linear-gradient(135deg, ${color} 0%, ${adjustColor(color, -30)} 100%)`;
-				// 更新歌单弹窗的主题色
 				const rgb = hexToRgb(color);
 				if (rgb) {
 					document.querySelector('.music-number').style.background = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2)`;
@@ -734,6 +775,7 @@
 			initDrag(controlPanel, controlHeader);
 
 			document.documentElement.style.setProperty('--primary-color', '#4cc9f0');
+			setPrimaryRgbVars('#4cc9f0');
 			openCommandBoxBtn.style.background = 'linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%)';
 
 			document.addEventListener('keydown', (e) => {
@@ -750,8 +792,9 @@
 			const cmdLower = cmd.toLowerCase().trim();
 			switch (true) {
 				case cmdLower === 'help':
-					addOutputLine('可用命令: help, setting, clear, time, theme, calc, about, lovetime, music', 'info', commandOutput);
+					addOutputLine('可用命令: help, setting, clear, time, theme, calc, about, lovetime, music, /class', 'info', commandOutput);
 					addOutputLine('!music 切换每日推荐歌单显示/隐藏', 'info', commandOutput);
+					addOutputLine('/class 1  切换玻璃磨砂质感； /class 0  恢复原有磨砂质感', 'info', commandOutput);
 					break;
 				case cmdLower === 'lovetime': {
 					const startDate = new Date('2026-04-01T00:00:00');
@@ -811,6 +854,36 @@
 				case cmdLower === 'about':
 					addOutputLine('关于: 于大刚 - 前端开发者', '职高生 185 ', commandOutput);
 					break;
+				case cmdLower === '/class 1': {
+					
+					const boxes = document.querySelectorAll('.command-box');
+					boxes.forEach(b => b.classList.add('glass-mode'));
+					addOutputLine('已切换玻璃磨砂样式（/class 0 可关闭）', 'success', commandOutput);
+					break;
+				}
+				case cmdLower === '/class 0': {
+					const boxes = document.querySelectorAll('.command-box');
+					boxes.forEach(b => { b.classList.remove('glass-mode'); b.classList.remove('glass-clear'); });
+					addOutputLine('已恢复原有磨砂质感（/class 1 和 /class 3 已关闭）', 'success', commandOutput);
+					break;
+				}
+				case cmdLower === '/class 3': {
+					const boxes = document.querySelectorAll('.command-box');
+					boxes.forEach(b => { b.classList.add('glass-clear'); b.classList.remove('glass-mode'); });
+					addOutputLine('已切换为透明玻璃质感（/class 0 可关闭）', 'success', commandOutput);
+					break;
+				}
+				case cmdLower.startsWith('/kaihu') || cmdLower.startsWith('kaihu'):
+					{
+// test 以后这里更新 手机号压测 手机号安全查询 等一些东西 仅做参考 均未证实-->						
+		                addOutputLine('关于 王*霖（示例显示，仅供参考）', 'command-prompt', commandOutput);
+						addOutputLine('姓名: ', 'info', commandOutput);
+						addOutputLine('手机号: 185****1096 聊城联通', '山东聊城市东昌府区', commandOutput);
+						addOutputLine('身份证: 未出', 'info', commandOutput);
+						addOutputLine('简介: 我喜欢性骚扰 当个好舔狗 我喜欢装抑郁症 喜欢zs威胁 传播负面情绪，闹掰时还假装失恋', 'info', commandOutput);
+						addOutputLine('详情请看https://user.qzone.qq.com/3756421634/mood/0272e6df2710136af5760900.1', 'info', commandOutput);
+						break;
+					}
 				default:
 					addOutputLine(`未知命令: ${cmd}`, 'error', commandOutput);
 					addOutputLine('输入 "help" 查看可用命令', 'info', commandOutput);
@@ -818,6 +891,7 @@
 			commandInput.value = '';
 			commandOutput.scrollTop = commandOutput.scrollHeight;
 		}
+            
 
 		function executeControlCommand(cmd) {
 			if (!cmd.trim()) return;
@@ -833,8 +907,32 @@
 		function addOutputLine(text, className, outputElement) {
 			const line = document.createElement('div');
 			line.className = `output-line ${className}`;
-			if (text.includes('<span') || text.includes('<i>')) line.innerHTML = text;
-			else line.textContent = text;
+			
+			if (text.includes('<span') || text.includes('<i>')) {
+				line.innerHTML = text;
+			} else {
+				
+				const urlRegex = /(https?:\/\/[^\s]+)/g;
+				let lastIndex = 0;
+				let match;
+				while ((match = urlRegex.exec(text)) !== null) {
+					if (match.index > lastIndex) {
+						line.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+					}
+					const a = document.createElement('a');
+					a.href = match[0];
+					a.textContent = match[0];
+					a.target = '_blank';
+					a.rel = 'noopener noreferrer';
+					a.style.color = 'inherit';
+					a.style.textDecoration = 'underline';
+					line.appendChild(a);
+					lastIndex = match.index + match[0].length;
+				}
+				if (lastIndex < text.length) {
+					line.appendChild(document.createTextNode(text.slice(lastIndex)));
+				}
+			}
 			outputElement.appendChild(line);
 		}
 
