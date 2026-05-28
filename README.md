@@ -1,3 +1,13 @@
+Version 1.1.0 Update （2026.5.28）
+- PowerShell Styles 新增2个
+- 使用用法 /class 0 恢复 /class 1 切换玻璃磨砂 /class 3 切换玻璃透明
+- 正在手搓后端
+- 预计更新手机号合法压测 手机号离线查询
+- 有小彩蛋 嘻嘻
+- 完整展示
+- <img width="1920" height="1080" alt="e224ff597cd2a9c2bfea17c48546353d" src="https://github.com/user-attachments/assets/6e18da08-ebc2-4551-9e5b-43cdfe90e4fb" />
+<img width="1920" height="1080" alt="e25cf03ebc567dd2d392c5ca00e6a8e6" src="https://github.com/user-attachments/assets/4cf6ea77-3230-4b1b-86c9-1960e4921c76" />
+
 Version 1.0.2 Update （2026.5.17）
 - PowerShell + Music
 - LoveTime
