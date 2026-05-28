@@ -293,6 +293,64 @@
 			background: transparent;
 			border-top: 1px solid rgba(255,255,255,0.03);
 		}
+
+
+		.poop-egg {
+			position: fixed;
+			top: 0; left: 0; width: 100%; height: 100%;
+			pointer-events: none; overflow: visible; z-index: 10000;
+		}
+
+		.poop-egg .poop {
+			position: absolute; top: -60px; display: inline-block; transform-origin: center;
+			text-shadow: 0 6px 12px rgba(0,0,0,0.45);
+			animation: poop-fall 5s linear forwards;
+		}
+
+		@keyframes poop-fall {
+			0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+			70% { opacity: 1; }
+			100% { transform: translateY(120vh) rotate(720deg); opacity: 0; }
+		}
+
+
+		@keyframes tilt-rotate {
+			0% { transform: rotate(0deg); }
+			25% { transform: rotate(1.5deg) translateY(-6px); }
+			50% { transform: rotate(0deg); }
+			75% { transform: rotate(-1.5deg) translateY(-6px); }
+			100% { transform: rotate(0deg); }
+		}
+
+		body.poop-tilt {
+			animation: tilt-rotate 4s ease-in-out infinite;
+		}
+
+
+		@keyframes tilt-rotate-strong {
+			0% { transform: rotate(0deg); }
+			20% { transform: rotate(6deg) translateY(-14px) scale(1.01); }
+			40% { transform: rotate(0deg) translateY(-6px) scale(1.00); }
+			60% { transform: rotate(-6deg) translateY(-14px) scale(1.01); }
+			80% { transform: rotate(0deg) translateY(-6px) scale(1.00); }
+			100% { transform: rotate(0deg); }
+		}
+
+		body.poop-tilt-strong {
+			animation: tilt-rotate-strong 3.6s ease-in-out infinite;
+			transform-origin: center top;
+		}
+
+
+		.poop-overlay {
+			position: fixed; left: 50%; top: 20%; transform: translateX(-50%); z-index: 10001;
+			background: rgba(0,0,0,0.6); color: #fff; padding: 18px 28px; border-radius: 12px;
+			box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align:center; font-weight:700; font-size:28px;
+		}
+
+		.poop-overlay .stop-btn {
+			margin-top:10px; display:inline-block; padding:8px 14px; background:#ff5f57; color:#fff; border-radius:8px; cursor:pointer; border:none; font-size:14px;
+		}
 	</style>
 </head>
 <body>
@@ -723,7 +781,7 @@
 		}
 
 		document.addEventListener('DOMContentLoaded', () => {
-			openCommandBoxBtn.addEventListener('click', () => { commandBox.classList.remove('hidden'); commandInput.focus(); });
+			openCommandBoxBtn.addEventListener('click', () => { recordCommandOpen(); commandBox.classList.remove('hidden'); commandInput.focus(); });
 			closeBtn.addEventListener('click', () => commandBox.classList.add('hidden'));
 			closeControlBtn.addEventListener('click', () => { controlPanel.classList.add('hidden'); commandBox.classList.remove('hidden'); commandInput.focus(); });
 
@@ -779,7 +837,7 @@
 			openCommandBoxBtn.style.background = 'linear-gradient(135deg, #4cc9f0 0%, #4361ee 100%)';
 
 			document.addEventListener('keydown', (e) => {
-				if (e.ctrlKey && e.key === 'f5') { e.preventDefault(); commandBox.classList.toggle('hidden'); if (!commandBox.classList.contains('hidden')) commandInput.focus(); }
+				if (e.ctrlKey && e.key === 'f5') { e.preventDefault(); recordCommandOpen(); commandBox.classList.toggle('hidden'); if (!commandBox.classList.contains('hidden')) commandInput.focus(); }
 				if (e.key === 'Escape') { commandBox.classList.add('hidden'); controlPanel.classList.add('hidden'); }
 			});
 		});
@@ -878,9 +936,9 @@
 // test 以后这里更新 手机号压测 手机号安全查询 等一些东西 仅做参考 均未证实-->						
 		                addOutputLine('关于 （示例显示，仅供参考）', 'command-prompt', commandOutput);
 						addOutputLine('姓名: ', 'info', commandOutput);
-						addOutputLine('手机号: ', '', commandOutput);
+						addOutputLine('手机号: ', commandOutput);
 						addOutputLine('身份证: 未出', 'info', commandOutput);
-						addOutputLine('简介: ', 'info', commandOutput);
+						addOutputLine('', 'info', commandOutput);
 						addOutputLine('', 'info', commandOutput);
 						break;
 					}
@@ -960,6 +1018,104 @@
 				element.style.transform = 'none';
 			}
 			function stopDrag() { isDragging = false; }
+		}
+
+
+		function recordCommandOpen() {
+			try {
+				let count = parseInt(localStorage.getItem('command_open_count') || '0', 10);
+				count += 1;
+				localStorage.setItem('command_open_count', String(count));
+
+				if (count % 10 === 0) {
+					triggerPoopEgg();
+					addOutputLine('彩蛋触发：天上掉粑粑！', 'info', commandOutput);
+				}
+			} catch (e) { console.warn('recordCommandOpen error', e); }
+		}
+
+		let _poopRunning = false;
+		let _poopInterval = null;
+		let _poopMusicInterval = null;
+		let _poopAudioCtx = null;
+		function triggerPoopEgg() {
+			if (_poopRunning) return;
+			_poopRunning = true;
+			const container = document.querySelector('.poop-egg') || (function(){ const d = document.createElement('div'); d.className = 'poop-egg'; document.body.appendChild(d); return d; })();
+
+			document.body.classList.add('poop-tilt-strong');
+
+
+			try {
+				const AudioCtx = window.AudioContext || window.webkitAudioContext;
+				_poopAudioCtx = new AudioCtx();
+				const gain = _poopAudioCtx.createGain();
+				gain.gain.value = 0.12;
+				gain.connect(_poopAudioCtx.destination);
+
+				const osc1 = _poopAudioCtx.createOscillator();
+				const osc2 = _poopAudioCtx.createOscillator();
+				osc1.type = 'square'; osc2.type = 'sawtooth';
+				osc1.connect(gain); osc2.connect(gain);
+				osc1.start(); osc2.start();
+
+				_poopMusicInterval = setInterval(() => {
+					const base = 220 + Math.random()*440;
+					osc1.frequency.setValueAtTime(base * (Math.random() > 0.5 ? 1 : 0.5), _poopAudioCtx.currentTime);
+					osc2.frequency.setValueAtTime(base * (Math.random() > 0.5 ? 1.5 : 0.75), _poopAudioCtx.currentTime);
+				}, 180);
+
+				_poopAudioCtx._osc1 = osc1; _poopAudioCtx._osc2 = osc2; _poopAudioCtx._gain = gain;
+			} catch (e) { console.warn('Audio start failed', e); }
+
+
+			const DURATION = 60 * 1000;
+			const START = Date.now();
+			// 每 700ms 生成一组掉落元素
+			_poopInterval = setInterval(() => {
+				const now = Date.now();
+				if (now - START >= DURATION) {
+					stopPoopEgg();
+					return;
+				}
+
+				const count = 6 + Math.floor(Math.random()*6);
+				for (let i = 0; i < count; i++) {
+					const el = document.createElement('div');
+					el.className = 'poop';
+					el.style.left = (Math.random() * 90 + 5) + 'vw';
+					el.style.fontSize = (20 + Math.random() * 44) + 'px';
+					el.style.transform = `rotate(${Math.random()*80 - 40}deg)`;
+					el.textContent = '�';
+					container.appendChild(el);
+
+					setTimeout(() => { el.remove(); }, 5200 + Math.random()*1200);
+				}
+			}, 700);
+		}
+
+		function stopPoopEgg() {
+
+			if (_poopInterval) { clearInterval(_poopInterval); _poopInterval = null; }
+			if (_poopMusicInterval) { clearInterval(_poopMusicInterval); _poopMusicInterval = null; }
+
+			if (_poopAudioCtx) {
+				try {
+					if (_poopAudioCtx._osc1) _poopAudioCtx._osc1.stop();
+					if (_poopAudioCtx._osc2) _poopAudioCtx._osc2.stop();
+					_poopAudioCtx.close();
+				} catch (e) { /* ignore */ }
+				_poopAudioCtx = null;
+			}
+
+			if (_poopOverlay) { _poopOverlay.remove(); _poopOverlay = null; }
+
+			document.body.classList.remove('poop-tilt');
+			document.body.classList.remove('poop-tilt-strong');
+
+			const container = document.querySelector('.poop-egg');
+			if (container) { container.innerHTML = ''; }
+			_poopRunning = false;
 		}
 	</script>
 	
