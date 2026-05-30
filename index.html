@@ -618,7 +618,7 @@
 		<a href="https://糖心vlog.lol">于大刚科技-GclirenTeam</a>
 	</footer>
 	
-	<!-- 悬浮命令框按钮 -->
+
 	<button class="open-command-btn" id="openCommandBox">
 		<i class="fas fa-terminal"></i>
 	</button>
@@ -652,7 +652,6 @@
 		</div>
 	</div>
 	
-	<!-- 功能控制面板 -->
 	<div class="command-box hidden" id="controlPanel">
 		<div class="command-header" id="controlHeader">
 			<div class="window-controls">
@@ -710,14 +709,13 @@
 		</div>
 	</div>
 	
-	<!-- 图片弹窗 -->
+
 	<div class="tc">
 		<div onclick="" class="tc-main">
 			<img class="tc-img" src="" alt="" srcset="">
 		</div>
 	</div>
 
-	<!-- 原网站脚本 -->
 	<script src="./static/js/script.js"></script>
 	
 
@@ -852,6 +850,7 @@
 				case cmdLower === 'help':
 					addOutputLine('可用命令: help, setting, clear, time, theme, calc, about, lovetime, music, /class', 'info', commandOutput);
 					addOutputLine('!music 切换每日推荐歌单显示/隐藏', 'info', commandOutput);
+					addOutputLine('phoneip 可查询手机号Ip地址 具体用法Phone 10086', 'info', commandOutput);
 					addOutputLine('/class 1  切换玻璃磨砂质感； /class 0  恢复原有磨砂质感', 'info', commandOutput);
 					break;
 				case cmdLower === 'lovetime': {
@@ -931,15 +930,54 @@
 					addOutputLine('已切换为透明玻璃质感（/class 0 可关闭）', 'success', commandOutput);
 					break;
 				}
-				case cmdLower.startsWith('/kaihu') || cmdLower.startsWith('kaihu'):
+				case cmdLower.startsWith('/chigua') || cmdLower.startsWith('chigua'):
 					{
-// test 以后这里更新 手机号压测 手机号安全查询 等一些东西 仅做参考 均未证实-->						
-		                addOutputLine('关于 （示例显示，仅供参考）', 'command-prompt', commandOutput);
-						addOutputLine('姓名: ', 'info', commandOutput);
-						addOutputLine('手机号: ', commandOutput);
+// test 以后这里更新 手机号压测 手机号安全查询 等一些东西 仅做参考 均未证实-->
+                        addOutputLine('以下信息均为伪造 并未得到证实 本网站严格遵守中华人民共和国网络法律法规 拒绝网络开盒 网络暴力', 'command-prompt', commandOutput);		
+						addOutputLine('姓名:） ', 'info', commandOutput);
+						addOutputLine('手机号: ', '', commandOutput);
 						addOutputLine('身份证: 未出', 'info', commandOutput);
-						addOutputLine('', 'info', commandOutput);
-						addOutputLine('', 'info', commandOutput);
+						addOutputLine('简介: ', 'info', commandOutput);
+						addOutputLine('详情请看', 'info', commandOutput);
+						addOutputLine('奉劝大家 对喜欢的人不要这么牵强 不要做出无理性行为 不要去性骚扰 以上信息均为伪造 并未得到证实 相应者已受着该有惩罚 ', 'info', commandOutput);
+						break;
+					}
+					// phoneip -
+					case cmdLower.startsWith('phoneip '): {
+						const phoneNumber_ip = cmdLower.substring('phoneip '.length).trim();
+						if (!phoneNumber_ip) {
+							addOutputLine('请提供手机号，例如: phoneip 185****1096', 'error', commandOutput);
+							break;
+						}
+						if (!/^1\d{10}$/.test(phoneNumber_ip)) {
+							addOutputLine('请输入有效的11位手机号', 'error', commandOutput);
+							break;
+						}
+						addOutputLine('免责声明:本网站采用cn.apihz.cn/api 并未作为商用 严格遵守中华人民共和国法律法规 严禁网络开户等恶劣行为 本网站完全开源免费', 'command-prompt', commandOutput);	
+						addOutputLine(`正在查询手机号 IP: ${phoneNumber_ip} ... `, 'info', commandOutput);
+
+						const apiId = '';
+						const apiKey = '';
+						const apiUrl = `https://cn.apihz.cn/api/ip/shouji.php?id=${apiId}&key=${apiKey}&phone=${phoneNumber_ip}`;
+
+						fetch(apiUrl, { method: 'GET' })
+							.then(response => response.text())
+							.then(text => {
+								let parsed = null;
+								try { parsed = JSON.parse(text); } catch (e) { /* 非 JSON */ }
+								if (parsed) {
+									addOutputLine(`返回数据: ${JSON.stringify(parsed)}`, 'info', commandOutput);
+									if (parsed.code) addOutputLine(`code: ${parsed.code}`, 'info', commandOutput);
+									if (parsed.msg) addOutputLine(`msg: ${parsed.msg}`, 'info', commandOutput);
+									if (parsed.data) addOutputLine(`data: ${JSON.stringify(parsed.data)}`, 'success', commandOutput);
+								} else {
+									addOutputLine(`响应: ${text}`, 'success', commandOutput);
+								}
+							})
+							.catch(err => {
+								console.error('phoneip error:', err);
+								addOutputLine('查询失败，网络或接口错误，请稍后重试', 'error', commandOutput);
+							});
 						break;
 					}
 				default:
