@@ -1,3 +1,9 @@
+Version 1.1.2 Update （2026 5.30）
+- 新增PhoneIp 查询功能
+- 需自备API
+- <img width="656" height="201" alt="aca81c082f6b987fe8d388a23e227276" src="https://github.com/user-attachments/assets/f7868ce6-8b58-470b-b00b-109e83e6f602" />
+
+
 Version 1.1.1 Update （2026 5.28）
 - 增加彩蛋 提示 多打开几次终端 仅限非移动端展示
 
