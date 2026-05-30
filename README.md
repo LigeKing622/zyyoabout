@@ -1,3 +1,9 @@
+Version 1.1.3 Update （2026 5.30）
+- 新增VideoGirl Get
+- 需自备API
+- <img width="1920" height="1080" alt="f0f0a0c65ffe8cb46d4e8f6d7c3e1606" src="https://github.com/user-attachments/assets/27333054-a873-4c2f-915f-f018d8795126" />
+  
+
 Version 1.1.2 Update （2026 5.30）
 - 新增PhoneIp 查询功能
 - 需自备API
