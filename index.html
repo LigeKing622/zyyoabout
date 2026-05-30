@@ -618,7 +618,7 @@
 		<a href="https://糖心vlog.lol">于大刚科技-GclirenTeam</a>
 	</footer>
 	
-
+	<!-- 悬浮命令框按钮 -->
 	<button class="open-command-btn" id="openCommandBox">
 		<i class="fas fa-terminal"></i>
 	</button>
@@ -652,6 +652,7 @@
 		</div>
 	</div>
 	
+	<!-- 功能控制面板 -->
 	<div class="command-box hidden" id="controlPanel">
 		<div class="command-header" id="controlHeader">
 			<div class="window-controls">
@@ -709,13 +710,14 @@
 		</div>
 	</div>
 	
-
+	<!-- 图片弹窗 -->
 	<div class="tc">
 		<div onclick="" class="tc-main">
 			<img class="tc-img" src="" alt="" srcset="">
 		</div>
 	</div>
 
+	<!-- 原网站脚本 -->
 	<script src="./static/js/script.js"></script>
 	
 
@@ -740,13 +742,8 @@
 			});
 			
 
-			musicContent.classList.remove('hidden');
-		});
-	</script>
-	
-
-	<script>
-
+                        musicContent.classList.remove('hidden');
+                    });
 		const commandBox = document.getElementById('commandBox');
 		const controlPanel = document.getElementById('controlPanel');
 		const openCommandBoxBtn = document.getElementById('openCommandBox');
@@ -934,7 +931,7 @@
 					{
 // test 以后这里更新 手机号压测 手机号安全查询 等一些东西 仅做参考 均未证实-->
                         addOutputLine('以下信息均为伪造 并未得到证实 本网站严格遵守中华人民共和国网络法律法规 拒绝网络开盒 网络暴力', 'command-prompt', commandOutput);		
-						addOutputLine('姓名:） ', 'info', commandOutput);
+						addOutputLine('姓名: ', 'info', commandOutput);
 						addOutputLine('手机号: ', '', commandOutput);
 						addOutputLine('身份证: 未出', 'info', commandOutput);
 						addOutputLine('简介: ', 'info', commandOutput);
@@ -978,9 +975,44 @@
 								console.error('phoneip error:', err);
 								addOutputLine('查询失败，网络或接口错误，请稍后重试', 'error', commandOutput);
 							});
-						break;
-					}
-				default:
+																				break;
+																			}
+																			// videogirl - Video API 示例命令
+																			case cmdLower.startsWith('videogirl'):{
+																				const parts = cmdLower.split(' ').filter(Boolean);
+																				if(parts.length === 1){
+																					addOutputLine('用法: videogirl get ', 'info', commandOutput);
+																					break;
+																				}
+																				if(parts[1] === 'example'){
+																					addOutputLine('curl GET 示例:', 'info', commandOutput);
+																					addOutputLine("curl \"https://cn.apihz.cn/api/fun/girl.php?id=&key=\"", 'command-cmd', commandOutput);
+																					addOutputLine('PowerShell 示例:', 'info', commandOutput);
+																					addOutputLine("Invoke-RestMethod -Uri 'https://cn.apihz.cn/api/fun/girl.php?id=&key=' -Method Get", 'command-cmd', commandOutput);
+																					break;
+																				}
+																				if(parts[1] === 'get'){
+																					addOutputLine('免责声明:本网站采用cn.apihz.cn/api 并未作为商用 严格遵守中华人民共和国法律法规 严禁涉黄 禁赌毒仅供娱乐 本网站完全开源免费', 'command-prompt', commandOutput);
+																					addOutputLine('今日美女~', 'info', commandOutput);
+																					fetch('https://cn.apihz.cn/api/fun/girl.php?id=&key=', { method: 'GET' })
+																						.then(r => r.text())
+																						.then(text => {
+																							addOutputLine(`响应: ${text}`, 'success', commandOutput);
+																							try{ const j = JSON.parse(text); if(j && j.url){ addOutputLine(`视频链接: ${j.url}`, 'info', commandOutput); } }catch(e){}
+																						})
+																						.catch(err => { console.error('videogirl GET error', err); addOutputLine('请求失败，请稍后重试', 'error', commandOutput); });
+																				break;
+																				}
+																				if(parts[1] === 'post'){
+																					addOutputLine('正在发起 POST 请求到 Video API...', 'info', commandOutput);
+																					fetch('https://cn.apihz.cn/api/fun/girl.php?id=&key=', { method: 'POST', headers: { 'Content-Type':'application/x-www-form-urlencoded' }, body: '' })
+																						.then(r => r.text()).then(text => { addOutputLine(`响应: ${text}`, 'success', commandOutput); try{ const j=JSON.parse(text); if(j && j.url) addOutputLine(`视频链接: ${j.url}`, 'info', commandOutput); }catch(e){} }).catch(err => { console.error('videogirl POST error', err); addOutputLine('请求失败', 'error', commandOutput); });
+																					break;
+																				}
+																				addOutputLine('未知子命令，请使用 videogirl get | videogirl post | videogirl example', 'error', commandOutput);
+																				break;
+																			}
+													default:
 					addOutputLine(`未知命令: ${cmd}`, 'error', commandOutput);
 					addOutputLine('输入 "help" 查看可用命令', 'info', commandOutput);
 			}
@@ -1156,7 +1188,6 @@
 			_poopRunning = false;
 		}
 	</script>
-	
 	<!-- 统计脚本 -->
 	<script charset="UTF-8" id="LA_COLLECT" src="//sdk.51.la/js-sdk-pro.min.js"></script>
 	<script>LA.init({ id: "KFqltKSkJgQTGD9l", ck: "KFqltKSkJgQTGD9l" })</script>
