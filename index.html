@@ -636,13 +636,14 @@
 			</div>
 		</div>
 		
-		<div class="command-content">
+			    <div class="command-content">
 			<div class="command-output" id="commandOutput">
 				<div class="output-line command-prompt">Welcome to PowerShell</div>
+				<div class="output-line command-prompt">免责声明:严格遵守中华人民共和国法律法规 严禁网络开户 黄 赌 毒 等恶劣行为 本网站完全开源免费 为二改个人主页</div>
 				没消失 失联邮箱联系Gcadmin1007@126.com 
 				<br>Github地址:https://github.com/LigeKing622/zyyoabout
 				<div class="output-line">!<span class="command-cmd">help</span> 查看所有可用命令</div>
-				<div class="output-line">!<span class="command-cmd">control</span> 打开功能控制面板</div>
+				<div class="output-line">!<span class="command-cmd">about</span> 查看历史更新</div>
 			</div>
 			
 			<div class="command-input-container">
@@ -857,6 +858,31 @@
 					addOutputLine(`我们已经在一起 ${diffDays} 天了！`, 'success', commandOutput);
 					break;
 				}
+						// pingip - Ping/检查主机连通性
+						case cmdLower.startsWith('pingip'):{
+							const parts = cmd.trim().split(/\s+/);
+							if(parts.length === 1){ addOutputLine('用法: pingip <host>', 'info', commandOutput); break; }
+							if(parts[1] === 'example'){ 
+								addOutputLine('curl 示例 (GET):', 'info', commandOutput);
+								addOutputLine("curl \"https://cn.apihz.cn/api/wangzhan/ping.php?id=88888888&key=88888888&host=www.apihz.cn\"", 'command-cmd', commandOutput);
+								addOutputLine('PowerShell 示例:', 'info', commandOutput);
+								addOutputLine("Invoke-RestMethod -Uri 'https://cn.apihz.cn/api/wangzhan/ping.php?id=88888888&key=88888888&host=www.apihz.cn' -Method Get", 'command-cmd', commandOutput);
+								break;
+							}
+							const host = parts[1];
+							addOutputLine(`正在 ping 主机: ${host} ...`, 'info', commandOutput);
+							const apiUrl = `https://cn.apihz.cn/api/wangzhan/ping.php?id=88888888&key=88888888&host=${encodeURIComponent(host)}`;
+							fetch(apiUrl, { method: 'GET' })
+								.then(r => r.text())
+								.then(text => {
+									let parsed = null;
+									try{ parsed = JSON.parse(text); }catch(e){}
+									if(parsed){ addOutputLine(`返回: ${JSON.stringify(parsed)}`, 'info', commandOutput); if(parsed.code) addOutputLine(`code: ${parsed.code}`, 'info', commandOutput); if(parsed.msg) addOutputLine(`msg: ${parsed.msg}`, 'info', commandOutput); if(parsed.data) addOutputLine(`data: ${JSON.stringify(parsed.data)}`, 'success', commandOutput); }
+									else { addOutputLine(`响应: ${text}`, 'success', commandOutput); }
+								})
+								.catch(err => { console.error('pingip error', err); addOutputLine('请求失败，请稍后重试', 'error', commandOutput); });
+							break;
+						}
 				case cmdLower === 'music': {
 					const musicPanel = document.getElementById('dailyMusic');
 					if (musicPanel.classList.contains('hidden')) {
@@ -906,7 +932,10 @@
 					break;
 				}
 				case cmdLower === 'about':
-					addOutputLine('关于: 于大刚 - 前端开发者', '职高生 185 ', commandOutput);
+					addOutputLine('关于: 于大刚 - 开发者', '更多详见Github', commandOutput);
+					addOutputLine('Update 1.1.4 （2026.5.31）新增身份证地址查询 Idcheck 身份证 ',' ', commandOutput);
+					addOutputLine('Update 1.1.3 （2026 5.30）新增VideoGirl 获取',' ', commandOutput);
+					addOutputLine('Update 1.1.2 （2026 5.30）新增手机号ip地址查询 PhoneIp 获取',' ', commandOutput);
 					break;
 				case cmdLower === '/class 1': {
 					
@@ -931,12 +960,19 @@
 					{
 // test 以后这里更新 手机号压测 手机号安全查询 等一些东西 仅做参考 均未证实-->
                         addOutputLine('以下信息均为伪造 并未得到证实 本网站严格遵守中华人民共和国网络法律法规 拒绝网络开盒 网络暴力', 'command-prompt', commandOutput);		
-						addOutputLine('姓名: ', 'info', commandOutput);
-						addOutputLine('手机号: ', '', commandOutput);
+						addOutputLine('姓名:关于  ', 'info', commandOutput);
+						addOutputLine('手机号: ', '山东聊城市东昌府区', commandOutput);
 						addOutputLine('身份证: 未出', 'info', commandOutput);
 						addOutputLine('简介: ', 'info', commandOutput);
-						addOutputLine('详情请看', 'info', commandOutput);
+						addOutputLine('详情请看1', 'info', commandOutput);
 						addOutputLine('奉劝大家 对喜欢的人不要这么牵强 不要做出无理性行为 不要去性骚扰 以上信息均为伪造 并未得到证实 相应者已受着该有惩罚 ', 'info', commandOutput);
+						addOutputLine('姓名:） ', 'info', commandOutput);
+						addOutputLine('地址:   ', '', commandOutput);
+						addOutputLine('身份证: ', 'info', commandOutput);
+						addOutputLine('简介:  ', 'info', commandOutput);
+						addOutputLine('详情:', 'info', commandOutput);
+						addOutputLine('奉劝大家 拒绝校园暴力 从我做起 虽然这帮的前任秒出的大头 但是我依然觉得校园暴力是可耻行为 希望每一个人不要受到霸凌 以上信息均为伪造 并未得到证实 相应者已受着该有惩罚 ', 'info', commandOutput);
+						
 						break;
 					}
 					// phoneip -
@@ -953,8 +989,8 @@
 						addOutputLine('免责声明:本网站采用cn.apihz.cn/api 并未作为商用 严格遵守中华人民共和国法律法规 严禁网络开户等恶劣行为 本网站完全开源免费', 'command-prompt', commandOutput);	
 						addOutputLine(`正在查询手机号 IP: ${phoneNumber_ip} ... `, 'info', commandOutput);
 
-						const apiId = '';
-						const apiKey = '';
+						const apiId = '10017354';
+						const apiKey = '4884718a6a2904ac8dc7836fac01c024';
 						const apiUrl = `https://cn.apihz.cn/api/ip/shouji.php?id=${apiId}&key=${apiKey}&phone=${phoneNumber_ip}`;
 
 						fetch(apiUrl, { method: 'GET' })
@@ -986,15 +1022,15 @@
 																				}
 																				if(parts[1] === 'example'){
 																					addOutputLine('curl GET 示例:', 'info', commandOutput);
-																					addOutputLine("curl \"https://cn.apihz.cn/api/fun/girl.php?id=&key=\"", 'command-cmd', commandOutput);
+																					addOutputLine("curl \"https://cn.apihz.cn/api/fun/girl.php?id=10017354&key=4884718a6a2904ac8dc7836fac01c024\"", 'command-cmd', commandOutput);
 																					addOutputLine('PowerShell 示例:', 'info', commandOutput);
-																					addOutputLine("Invoke-RestMethod -Uri 'https://cn.apihz.cn/api/fun/girl.php?id=&key=' -Method Get", 'command-cmd', commandOutput);
+																					addOutputLine("Invoke-RestMethod -Uri 'https://cn.apihz.cn/api/fun/girl.php?id=10017354&key=4884718a6a2904ac8dc7836fac01c024' -Method Get", 'command-cmd', commandOutput);
 																					break;
 																				}
 																				if(parts[1] === 'get'){
 																					addOutputLine('免责声明:本网站采用cn.apihz.cn/api 并未作为商用 严格遵守中华人民共和国法律法规 严禁涉黄 禁赌毒仅供娱乐 本网站完全开源免费', 'command-prompt', commandOutput);
 																					addOutputLine('今日美女~', 'info', commandOutput);
-																					fetch('https://cn.apihz.cn/api/fun/girl.php?id=&key=', { method: 'GET' })
+																					fetch('https://cn.apihz.cn/api/fun/girl.php?id=10017354&key=4884718a6a2904ac8dc7836fac01c024', { method: 'GET' })
 																						.then(r => r.text())
 																						.then(text => {
 																							addOutputLine(`响应: ${text}`, 'success', commandOutput);
@@ -1005,11 +1041,43 @@
 																				}
 																				if(parts[1] === 'post'){
 																					addOutputLine('正在发起 POST 请求到 Video API...', 'info', commandOutput);
-																					fetch('https://cn.apihz.cn/api/fun/girl.php?id=&key=', { method: 'POST', headers: { 'Content-Type':'application/x-www-form-urlencoded' }, body: '' })
+																					fetch('https://cn.apihz.cn/api/fun/girl.php?id=10017354&key=4884718a6a2904ac8dc7836fac01c024', { method: 'POST', headers: { 'Content-Type':'application/x-www-form-urlencoded' }, body: '' })
 																						.then(r => r.text()).then(text => { addOutputLine(`响应: ${text}`, 'success', commandOutput); try{ const j=JSON.parse(text); if(j && j.url) addOutputLine(`视频链接: ${j.url}`, 'info', commandOutput); }catch(e){} }).catch(err => { console.error('videogirl POST error', err); addOutputLine('请求失败', 'error', commandOutput); });
 																					break;
 																				}
 																				addOutputLine('未知子命令，请使用 videogirl get | videogirl post | videogirl example', 'error', commandOutput);
+																				break;
+																			}
+																			// idcheck - 身份证归属地查询（card.php）
+																			case cmdLower.startsWith('idcheck'):{
+																				const partsId = cmd.trim().split(/\s+/);
+																				if(partsId.length === 1){
+																					addOutputLine('用法: idcheck <身份证号>  或 idcheck example', 'info', commandOutput);
+																					break;
+																				}
+																				if(partsId[1] === 'example'){
+																					addOutputLine('curl 示例 (GET):', 'info', commandOutput);
+																					addOutputLine("curl \"https://cn.apihz.cn/api/other/card.php?id=10017354&key=4884718a6a2904ac8dc7836fac01c024&card=510704888888888888\"", 'command-cmd', commandOutput);
+																					addOutputLine('PowerShell 示例:', 'info', commandOutput);
+																					addOutputLine("Invoke-RestMethod -Uri 'https://cn.apihz.cn/api/other/card.php?id=10017354&key=4884718a6a2904ac8dc7836fac01c024&card=510704888888888888' -Method Get", 'command-cmd', commandOutput);
+																					addOutputLine('PHP GET/POST 示例已在页面底部教程中提供（建议在服务器端调用以隐藏 key）', 'info', commandOutput);
+																					break;
+																				}
+																				// 正常调用：idcheck <身份证号>
+																				const card = partsId[1] || '';
+																				if(!card){ addOutputLine('请提供身份证号，例如： idcheck 510704199001011234', 'error', commandOutput); break; }
+																				addOutputLine('免责声明:本网站采用cn.apihz.cn/api 并未作为商用 严格遵守中华人民共和国法律法规 严禁网络开户等恶劣行为 本网站完全开源免费', 'command-prompt', commandOutput);	
+																				addOutputLine(`正在查询身份证归属地: ${card}`, 'info', commandOutput);
+																				const api = `https://cn.apihz.cn/api/other/card.php?id=10017354&key=4884718a6a2904ac8dc7836fac01c024&card=${encodeURIComponent(card)}`;
+																				fetch(api, { method: 'GET' })
+																					.then(r => r.text())
+																					.then(text => {
+																						let parsed = null;
+																						try { parsed = JSON.parse(text); } catch (e) { }
+																						if(parsed){ addOutputLine(`返回: ${JSON.stringify(parsed)}`, 'info', commandOutput); if(parsed.code) addOutputLine(`code: ${parsed.code}`, 'info', commandOutput); if(parsed.msg) addOutputLine(`msg: ${parsed.msg}`, 'info', commandOutput); if(parsed.data) addOutputLine(`data: ${JSON.stringify(parsed.data)}`, 'success', commandOutput); }
+																						else { addOutputLine(`响应: ${text}`, 'success', commandOutput); }
+																					})
+																					.catch(err=>{ console.error('idcheck error', err); addOutputLine('请求失败，请稍后重试', 'error', commandOutput); });
 																				break;
 																			}
 													default:
