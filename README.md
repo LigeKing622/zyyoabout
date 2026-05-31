@@ -2,7 +2,8 @@ Version 1.1.5 Update （2026.5。31）
 - 新增指令pingip
 - 新增指令Idcheck （身份证归属地查询）
 - <img width="640" height="270" alt="605f96077edc5387a2e3302667eab58c" src="https://github.com/user-attachments/assets/43e0c92b-641a-4a35-8b36-fcccb495b584" />
-- <img width="640" height="270" alt="605f96077edc5387a2e3302667eab58c" src="https://github.com/user-attachments/assets/65ac692a-9046-42ec-99fb-8fbd8165217f" />
+- <img width="671" height="197" alt="bfcf50769221982ba79816acc339c9a4" src="https://github.com/user-attachments/assets/56162a82-9008-4ffb-bd14-9a819447584a" />
+
 
 Version 1.1.3 Update （2026 5.30）
 - 新增VideoGirl Get
